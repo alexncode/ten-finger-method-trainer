@@ -1,4 +1,5 @@
 # 10fingerType
+Launch app and just start writing after 5 seconds after you stop results wold show up.
 
 ## Project setup
 ```
