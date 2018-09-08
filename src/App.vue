@@ -1,14 +1,19 @@
 <template>
   <div id="app">
     <div class="container">
-      <TextArea v-on:textChanged='calcSpeed'/>
-      <Statistic v-bind:speed="speedOfWriting" v-bind:totalChar="totalCharacters" v-bind:totalWords="totalWords"/>
+      <Header v-on:withoutSample='withoutSample = !withoutSample'/>
+      <TextArea v-on:textChanged='calcSpeed' v-bind:layout="withoutSample"/>
+      <Statistic v-bind:speed="speedOfWriting"
+                 v-bind:totalChar="totalCharacters" 
+                 v-bind:totalWords="totalWords"
+                 v-bind:totalTime="totalTime"/>
       <Keyboard/>
     </div>
   </div>
 </template>
 
 <script>
+import Header from "./components/Header.vue";
 import TextArea from "./components/TextArea.vue";
 import Statistic from "./components/Statistic.vue";
 import Keyboard from "./components/Keyboard.vue";
@@ -20,7 +25,8 @@ export default {
   components: {
     Keyboard,
     TextArea,
-    Statistic
+    Statistic,
+    Header
   },
   data() {
     return {
@@ -29,7 +35,9 @@ export default {
       startTime: Date,
       endTime: Date,
       speedOfWriting: 0,
-      characterOffset: 0
+      characterOffset: 0,
+      withoutSample: false,
+      totalTime: 0
     };
   },
   computed: {
@@ -60,6 +68,7 @@ export default {
             ((vm.endTime - vm.startTime - 5000) / 1000) *
             60
         );
+        vm.totalTime += Math.round((vm.endTime - vm.startTime - 5000) / 1000);
       }, 5000);
     }
   }
@@ -67,12 +76,18 @@ export default {
 </script>
 
 <style lang="scss">
+body {
+  background-color: #d1d1d1;
+  margin: 0;
+}
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  margin-top: 1rem;
 }
 
 .container {

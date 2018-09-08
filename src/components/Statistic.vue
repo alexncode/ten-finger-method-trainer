@@ -1,6 +1,10 @@
 <template>
   <div class="statistic">
-      <span>Speed of writing: {{ speed }} c/m | Characters count: {{totalChar}} | Words count: {{totalWords}}</span>
+      <span>Speed of writing: {{ speed }} c/m |
+            Characters count: {{totalChar}} |
+            Words count: {{totalWords}} |
+            TotalTime: {{ totalTime }}
+      </span>
   </div>
 </template>
 
@@ -10,7 +14,8 @@ export default {
   props: {
     speed: Number,
     totalChar: Number,
-    totalWords: Number
+    totalWords: Number,
+    totalTime: Number
   }
 };
 </script>
