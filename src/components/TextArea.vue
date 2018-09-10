@@ -41,6 +41,7 @@ export default {
         this.output = this.sample;
         this.errorOffset = 0;
       }
+      //Implement firsts optimize later
       if (this.pos !== 0 && event.data !== null) {
         if (this.inputText[this.pos - 1] !== this.sample[this.pos - 1]) {
           this.output = this.output.insert(

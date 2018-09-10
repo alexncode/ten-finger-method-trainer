@@ -68,6 +68,9 @@ export default {
             ((vm.endTime - vm.startTime - 5000) / 1000) *
             60
         );
+        if (vm.speedOfWriting < 0) {
+          vm.speedOfWriting = 0;
+        }
         vm.totalTime += Math.round((vm.endTime - vm.startTime - 5000) / 1000);
       }, 5000);
     }
