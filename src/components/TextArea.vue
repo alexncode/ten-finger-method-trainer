@@ -37,11 +37,13 @@ export default {
   },
   methods: {
     sampleText: function(event) {
+      //Reset all when input empty
       if (this.inputText === "") {
         this.output = this.sample;
         this.errorOffset = 0;
       }
       //Implement firsts optimize later
+      //Highlight errors
       if (this.pos !== 0 && event.data !== null) {
         if (this.inputText[this.pos - 1] !== this.sample[this.pos - 1]) {
           this.output = this.output.insert(
@@ -67,6 +69,7 @@ export default {
           this.errorOffset += 7;
         }
       }
+      //Backspace handling
       if (event.inputType === "deleteContentBackward" && this.pos !== 0) {
         this.deletaLastSpan();
       }
@@ -74,6 +77,7 @@ export default {
     },
     getSample: function() {
       let vm = this;
+      //Fetch api response format - array with one element: [text: "sample text",]
       fetch("http://127.0.0.1:8000/demos/api/sample-text/")
         .then(function(response) {
           return response.json();
@@ -83,12 +87,14 @@ export default {
           vm.output = vm.sample;
         })
         .catch(function(error) {
+          //Sample text when api is offline
           this.sample =
             "From the comfort of our modern lives we tend to look back at the turn of the twentieth century as a dangerous time for sea travellers. With limited communication facilities, and shipping technology still in its infancy in the early nineteen hundreds, we consider ocean travel to have been a risky business. But to the people of the time it was one of the safest forms of transport. At the time of the Titanic’s maiden voyage in 1912, there had only been four lives lost in the previous forty years on passenger ships on the North Atlantic crossing. And the Titanic was confidently proclaimed to be unsinkable. She represented the pinnacle of technological advance at the time. Her builders, crew and passengers had no doubt that she was the finest ship ever built. But still she did sink on April 14, 1912, taking 1,517 of her passengers and crew with her.";
           console.log(error);
         });
     },
     deletaLastSpan: function() {
+      //Straightforward way to delete last span
       let offset = this.output.length;
       let start = this.output.lastIndexOf("<span");
       let finish = this.output.lastIndexOf(';">') + 3;

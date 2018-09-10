@@ -5,17 +5,30 @@
             Words count: {{totalWords}} |
             TotalTime: {{ totalTimeHuman }}
       </span>
+      <button id="show-modal" @click="showModal = true">Statistic</button>
+      <!-- use the modal component, pass in the prop -->
+      <Modal v-if="showModal" @close="showModal = false"/>
   </div>
 </template>
 
 <script>
+import Modal from "./StatisticModal.vue";
+
 export default {
   name: "Statistic",
+  components: {
+    Modal
+  },
   props: {
     speed: Number,
     totalChar: Number,
     totalWords: Number,
     totalTime: Number
+  },
+  data() {
+    return {
+      showModal: false
+    };
   },
   computed: {
     totalTimeHuman: function() {
