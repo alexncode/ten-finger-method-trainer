@@ -7,14 +7,16 @@
             Statistic
           </div>
           <div class="modal-body">
-            <div v-for="(stat, id) in stats" :key='id'>
-                {{ stat.speed }} | {{ stat.totalChar }} | {{ stat.totalWords }} | {{ stat.totalTime }}
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button class="modal-default-button" @click="$emit('close')">
-            OK
-            </button>
+            <div>Speed</div>
+            <div>Characters</div>
+            <div>Words</div>
+            <div>Time</div>
+            <template v-for="(stat, id) in stats">
+                <div :key="'s'+id">{{ stat.speed }}</div> 
+                <div :key="'c'+id">{{ stat.totalChar }}</div>
+                <div :key="'w'+id">{{ stat.totalWords }}</div>
+                <div :key="'t'+id">{{ stat.totalTime }}</div>
+            </template>
           </div>
         </div>
       </div>
@@ -72,11 +74,9 @@ export default {
 }
 
 .modal-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   margin: 20px 0;
-}
-
-.modal-default-button {
-  float: right;
 }
 
 .modal-enter {

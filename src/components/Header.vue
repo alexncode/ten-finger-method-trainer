@@ -2,8 +2,12 @@
   <div class="header">
       <h1>Ten finger typing method trainer</h1>
       <div class="layout">
-          <div class="layout__button" @click="$emit('withoutSample')">WS</div>
-          <div class="layout__button">WK</div>
+          <div class="layout__button" @click="$emit('withoutSample')">
+            <img src='@/assets/full.svg' alt="icon" width="24" height="24">
+          </div>
+          <div class="layout__button">
+            <img src='@/assets/wike.svg' alt="icon" width="24" height="24">
+          </div>
       </div>
   </div>
 </template>
@@ -32,9 +36,8 @@ export default {
   .layout {
     position: absolute;
     right: 0;
-    top: 10px;
+    top: 7px;
     display: flex;
-    float: right;
     width: 100px;
     justify-content: space-around;
     cursor: pointer;
