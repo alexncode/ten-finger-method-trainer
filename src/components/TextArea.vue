@@ -25,6 +25,7 @@ export default {
     this.errorOffset = 0;
     this.output = "";
     this.sample = "";
+    this.errorsCount = 0;
     this.getSample();
     String.prototype.insert = function(idx, str) {
       return this.slice(0, idx) + str + this.slice(idx);
@@ -41,6 +42,7 @@ export default {
       if (this.inputText === "") {
         this.output = this.sample;
         this.errorOffset = 0;
+        this.errorsCount = 0;
       }
       //Implement firsts optimize later
       //Highlight errors
@@ -56,6 +58,8 @@ export default {
             "</span>"
           );
           this.errorOffset += 7;
+          this.errorsCount += 1;
+          this.$emit("errorCount", this.errorsCount);
         } else {
           this.output = this.output.insert(
             this.pos + this.errorOffset - 1,

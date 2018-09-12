@@ -2,11 +2,14 @@
   <div id="app">
     <div class="container">
       <Header v-on:withoutSample='withoutSample = !withoutSample'/>
-      <TextArea v-on:textChanged='calcSpeed' v-bind:layout="withoutSample"/>
+      <TextArea v-on:textChanged='calcSpeed' 
+                v-on:errorCount='setErrorCount'
+                v-bind:layout="withoutSample"/>
       <Statistic v-bind:speed="speedOfWriting"
                  v-bind:totalChar="totalCharacters" 
                  v-bind:totalWords="totalWords"
-                 v-bind:totalTime="totalTime"/>
+                 v-bind:totalTime="totalTime"
+                 v-bind:errorCount="errorCount"/>
       <Keyboard/>
     </div>
   </div>
@@ -37,7 +40,8 @@ export default {
       speedOfWriting: 0,
       characterOffset: 0,
       withoutSample: false,
-      totalTime: 0
+      totalTime: 0,
+      errorCount: 0
     };
   },
   computed: {
@@ -73,6 +77,9 @@ export default {
         }
         vm.totalTime += Math.round((vm.endTime - vm.startTime - 5000) / 1000);
       }, 5000);
+    },
+    setErrorCount: function(val) {
+      this.errorCount = val;
     }
   }
 };

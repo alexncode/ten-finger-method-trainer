@@ -1,9 +1,10 @@
 <template>
   <div class="statistic">
       <span>Speed of writing: {{ speed }} c/m |
-            Characters count: {{totalChar}} |
-            Words count: {{totalWords}} |
-            TotalTime: {{ totalTimeHuman }}
+            Chars: {{totalChar}} |
+            Words: {{totalWords}} |
+            Time: {{ totalTimeHuman }} |
+            Errors: {{ errorCount }}
       </span>
       <button id="show-modal" @click="showModal = true">Statistic</button>
       <!-- use the modal component, pass in the prop -->
@@ -23,7 +24,8 @@ export default {
     speed: Number,
     totalChar: Number,
     totalWords: Number,
-    totalTime: Number
+    totalTime: Number,
+    errorCount: Number
   },
   data() {
     return {
