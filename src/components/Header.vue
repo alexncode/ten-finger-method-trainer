@@ -5,7 +5,7 @@
           <div class="layout__button" @click="$emit('withoutSample')">
             <img src='@/assets/full.svg' alt="icon" width="24" height="24">
           </div>
-          <div class="layout__button">
+          <div class="layout__button" @click="$emit('withoutKeyboard')">
             <img src='@/assets/wike.svg' alt="icon" width="24" height="24">
           </div>
       </div>

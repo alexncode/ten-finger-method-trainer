@@ -46,9 +46,10 @@ export default {
         let stats = JSON.parse(window.localStorage.getItem("stats")) || {};
         if (stats[key]) {
           stats[key].speed = (stats[key].speed + this.speed) / 2;
-          stats[key].totalChar = (stats[key].totalChar + this.totalChar) / 2;
-          stats[key].totalWords = (stats[key].totalWords + this.totalWords) / 2;
+          stats[key].totalChar += this.totalChar;
+          stats[key].totalWords += this.totalWords;
           stats[key].totalTime += this.totalTime;
+          stats[key].errorCount += this.errorCount;
           stats[key].count += 1;
         } else {
           stats[key] = {
@@ -56,6 +57,7 @@ export default {
             totalChar: this.totalChar,
             totalWords: this.totalWords,
             totalTime: this.totalTime,
+            errorCount: this.errorCount,
             count: 1
           };
         }

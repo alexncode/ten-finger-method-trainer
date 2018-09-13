@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <div class="container">
-      <Header v-on:withoutSample='withoutSample = !withoutSample'/>
+      <Header v-on:withoutSample='withoutSample = !withoutSample'
+              v-on:withoutKeyboard='withoutKeyboard = !withoutKeyboard'/>
       <TextArea v-on:textChanged='calcSpeed' 
                 v-on:errorCount='setErrorCount'
                 v-bind:layout="withoutSample"/>
@@ -10,7 +11,7 @@
                  v-bind:totalWords="totalWords"
                  v-bind:totalTime="totalTime"
                  v-bind:errorCount="errorCount"/>
-      <Keyboard/>
+      <Keyboard v-if="!withoutKeyboard"/>
     </div>
   </div>
 </template>
@@ -40,6 +41,7 @@ export default {
       speedOfWriting: 0,
       characterOffset: 0,
       withoutSample: false,
+      withoutKeyboard: false,
       totalTime: 0,
       errorCount: 0
     };
@@ -72,7 +74,7 @@ export default {
             ((vm.endTime - vm.startTime - 5000) / 1000) *
             60
         );
-        if (vm.speedOfWriting < 0) {
+        if (vm.speedOfWriting < 0 || !vm.speedOfWriting) {
           vm.speedOfWriting = 0;
         }
         vm.totalTime += Math.round((vm.endTime - vm.startTime - 5000) / 1000);
