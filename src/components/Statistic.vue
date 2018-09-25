@@ -1,25 +1,13 @@
 <template>
   <div class="statistic">
-      <span>Speed of writing: {{ speed }} c/m |
-            Chars: {{totalChar}} |
-            Words: {{totalWords}} |
-            Time: {{ totalTimeHuman }} |
-            Errors: {{ errorCount }}
-      </span>
-      <button id="show-modal" @click="showModal = true">Statistic</button>
-      <!-- use the modal component, pass in the prop -->
-      <Modal v-if="showModal" @close="showModal = false"/>
+    <span>Speed of writing: {{ speed }} c/m | Chars: {{totalChar}} | Words: {{totalWords}} | Time: {{ totalTimeHuman }} | Errors: {{ errorCount }}
+    </span>
   </div>
 </template>
 
 <script>
-import Modal from "./StatisticModal.vue";
-
 export default {
   name: "Statistic",
-  components: {
-    Modal
-  },
   props: {
     speed: Number,
     totalChar: Number,
@@ -42,7 +30,12 @@ export default {
       if (this.speed !== 0) {
         let date = new Date();
         let key =
-          date.getFullYear() + ":" + date.getMonth() + ":" + date.getDay();
+          date.getDate() +
+          ":" +
+          (parseInt(date.getMonth()) + 1) +
+          ":" +
+          date.getFullYear();
+        console.log(key);
         let stats = JSON.parse(window.localStorage.getItem("stats")) || {};
         if (stats[key]) {
           stats[key].speed = (stats[key].speed + this.speed) / 2;

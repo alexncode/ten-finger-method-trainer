@@ -7,17 +7,20 @@
             Statistic
           </div>
           <div class="modal-body">
+            <div>Date</div>
             <div>Speed</div>
             <div>Characters</div>
             <div>Words</div>
             <div>Time</div>
-            <template v-for="(stat, id) in stats">
-                <div :key="'s'+id">{{ stat.speed }}</div> 
-                <div :key="'c'+id">{{ stat.totalChar }}</div>
-                <div :key="'w'+id">{{ stat.totalWords }}</div>
-                <div :key="'t'+id">{{ stat.totalTime }}</div>
+            <template v-for="(stat, id, key) in statsEnries">
+              <div :key="key">{{stat[0]}}</div>
+              <div :key="'s'+id">{{ stat[1].speed }}</div>
+              <div :key="'c'+id">{{ stat[1].totalChar }}</div>
+              <div :key="'w'+id">{{ stat[1].totalWords }}</div>
+              <div :key="'t'+id">{{ stat[1].totalTime }}</div>
             </template>
           </div>
+          <canvas ref="chart" id="myChart" width="400" height="400"></canvas>
         </div>
       </div>
     </div>
@@ -25,6 +28,8 @@
 </template>
 
 <script>
+var Chart = require("chart.js");
+
 export default {
   name: "StatisticModal",
   props: {},
@@ -33,8 +38,54 @@ export default {
       stats: {}
     };
   },
+  computed: {
+    statsEnries: function() {
+      return Object.entries(this.stats);
+    }
+  },
   created: function() {
     this.stats = JSON.parse(window.localStorage.getItem("stats"));
+    console.log(
+      Object.entries(this.stats)[0][0],
+      Object.entries(this.stats)[0][1]
+    );
+  },
+  mounted: function() {
+    var ctx = this.$refs.chart;
+    console.log(this.statsEnries);
+    var myChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: this.statsEnries.map(val => val[0]),
+        datasets: [
+          {
+            label: "Speed",
+            data: this.statsEnries.map(val => val[1].speed),
+            borderColor: ["rgba(255,99,132,1)"],
+            borderWidth: 1,
+            fill: false
+          },
+          {
+            label: "Errors",
+            data: this.statsEnries.map(val => val[1].errorCount),
+            borderColor: ["rgba(100,99,255,1)"],
+            borderWidth: 1,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true
+              }
+            }
+          ]
+        }
+      }
+    });
   }
 };
 </script>
@@ -59,7 +110,7 @@ export default {
 }
 
 .modal-container {
-  width: 300px;
+  width: 400px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;
@@ -75,7 +126,7 @@ export default {
 
 .modal-body {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   margin: 20px 0;
 }
 

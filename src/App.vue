@@ -1,17 +1,10 @@
 <template>
   <div id="app">
     <div class="container">
-      <Header v-on:withoutSample='withoutSample = !withoutSample'
-              v-on:withoutKeyboard='withoutKeyboard = !withoutKeyboard'/>
-      <TextArea v-on:textChanged='calcSpeed' 
-                v-on:errorCount='setErrorCount'
-                v-bind:layout="withoutSample"/>
-      <Statistic v-bind:speed="speedOfWriting"
-                 v-bind:totalChar="totalCharacters" 
-                 v-bind:totalWords="totalWords"
-                 v-bind:totalTime="totalTime"
-                 v-bind:errorCount="errorCount"/>
-      <Keyboard v-if="!withoutKeyboard"/>
+      <Header v-on:withoutSample='withoutSample = !withoutSample' v-on:withoutKeyboard='withoutKeyboard = !withoutKeyboard' />
+      <TextArea v-on:textChanged='calcSpeed' v-on:errorCount='setErrorCount' v-bind:layout="withoutSample" />
+      <Statistic v-bind:speed="speedOfWriting" v-bind:totalChar="totalCharacters" v-bind:totalWords="totalWords" v-bind:totalTime="totalTime" v-bind:errorCount="errorCount" />
+      <Keyboard v-if="!withoutKeyboard" />
     </div>
   </div>
 </template>
@@ -77,7 +70,7 @@ export default {
         if (vm.speedOfWriting < 0 || !vm.speedOfWriting) {
           vm.speedOfWriting = 0;
         }
-        vm.totalTime += Math.round((vm.endTime - vm.startTime - 5000) / 1000);
+        vm.totalTime = Math.round((vm.endTime - vm.startTime - 5000) / 1000);
       }, 5000);
     },
     setErrorCount: function(val) {

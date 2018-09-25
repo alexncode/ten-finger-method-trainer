@@ -1,9 +1,11 @@
 <template>
   <div class="text-area">
-      <textarea class="written-text" name="main" id="text" 
-                @input="$emit('textChanged', $event.target.value); sampleText($event);" 
-                v-model="inputText"></textarea>
-      <div v-if="!layout" class="sample-text" v-html="output"></div>
+    <div class="left">
+      <textarea ref="mainInput" class="written-text" name="main" id="text" @input="$emit('textChanged', $event.target.value); sampleText($event);" v-model="inputText"></textarea>
+      <!-- TODO: Replace 'C' with icon -->
+      <button class="clear-btn" @click="clearText()">C</button>
+    </div>
+    <div v-if="!layout" class="sample-text" v-html="output"></div>
   </div>
 </template>
 
@@ -36,13 +38,15 @@ export default {
       return this.inputText.length;
     }
   },
+  mounted: function() {
+    console.log(this.$refs);
+    this.$refs.mainInput.focus();
+  },
   methods: {
     sampleText: function(event) {
       //Reset all when input empty
       if (this.inputText === "") {
-        this.output = this.sample;
-        this.errorOffset = 0;
-        this.errorsCount = 0;
+        this.clearText();
       }
       //Implement firsts optimize later
       //Highlight errors
@@ -108,6 +112,13 @@ export default {
       this.output = this.output.slice(0, start) + this.output.slice(start + 7);
       offset = offset - this.output.length;
       this.errorOffset = this.errorOffset - offset;
+    },
+    clearText: function() {
+      this.inputText = "";
+      this.output = this.sample;
+      this.errorOffset = 0;
+      this.errorsCount = 0;
+      this.$emit("textChanged", this.inputText);
     }
   }
 };
@@ -120,13 +131,34 @@ export default {
   width: 100%;
   height: 300px;
   background-color: #fff;
-  .written-text {
+  .left {
     flex: 1;
-    font-family: inherit;
-    font-size: inherit;
-    color: inherit;
-    padding: 0.5rem;
-    resize: none;
+    // border: 1px solid rgba(0, 0, 0, 0.26);
+    position: relative;
+    .written-text {
+      height: 100%;
+      width: 100%;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      padding: 0.5rem;
+      resize: none;
+      box-sizing: border-box;
+    }
+    .clear-btn {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      background-color: #2196f3;
+      border: 0;
+      border-radius: 50%;
+      height: 32px;
+      width: 32px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+      }
+    }
   }
   .sample-text {
     text-align: left;
