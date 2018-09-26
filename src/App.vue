@@ -2,7 +2,7 @@
   <div id="app">
     <div class="container">
       <Header v-on:withoutSample='withoutSample = !withoutSample' v-on:withoutKeyboard='withoutKeyboard = !withoutKeyboard' />
-      <TextArea v-on:textChanged='calcSpeed' v-on:errorCount='setErrorCount' v-bind:layout="withoutSample" />
+      <TextArea v-on:textChanged='updateStats' v-on:errorCount='setErrorCount' v-bind:layout="withoutSample" />
       <Statistic v-bind:speed="speedOfWriting" v-bind:totalChar="totalCharacters" v-bind:totalWords="totalWords" v-bind:totalTime="totalTime" v-bind:errorCount="errorCount" />
       <Keyboard v-if="!withoutKeyboard" />
     </div>
@@ -32,7 +32,7 @@ export default {
       startTime: Date,
       endTime: Date,
       speedOfWriting: 0,
-      characterOffset: 0,
+      // characterOffset: 0,
       withoutSample: false,
       withoutKeyboard: false,
       totalTime: 0,
@@ -49,32 +49,66 @@ export default {
     }
   },
   methods: {
-    calcSpeed: function(val) {
+    updateStats: function(val) {
       this.text = val;
       let vm = this;
       if (!vm.active) {
         vm.active = true;
         vm.startTime = Date.now();
-        vm.characterOffset = vm.totalCharacters;
+        // vm.characterOffset = vm.totalCharacters;
       }
       clearTimeout(delay);
+      vm.endTime = Date.now();
+      vm.calcSpeed();
+      vm.totalTime = Math.round((vm.endTime - vm.startTime) / 1000);
       delay = setTimeout(function() {
         vm.active = false;
-        vm.endTime = Date.now();
-        //Calculate speed of writing character in minute. (totalCharacters / totalSeconds * 60sec)
-        vm.speedOfWriting = Math.round(
-          (vm.totalCharacters - vm.characterOffset) /
-            ((vm.endTime - vm.startTime - 5000) / 1000) *
-            60
-        );
-        if (vm.speedOfWriting < 0 || !vm.speedOfWriting) {
-          vm.speedOfWriting = 0;
-        }
-        vm.totalTime = Math.round((vm.endTime - vm.startTime - 5000) / 1000);
+        vm.saveStats();
       }, 5000);
     },
     setErrorCount: function(val) {
       this.errorCount = val;
+    },
+    calcSpeed: function() {
+      //Calculate speed of writing character in minute. (totalCharacters / totalSeconds * 60sec)
+      this.speedOfWriting = Math.round(
+        (this.totalCharacters / ((this.endTime - this.startTime) / 1000)) * 60
+      );
+      if (this.speedOfWriting < 0 || !this.speedOfWriting) {
+        this.speedOfWriting = 0;
+      }
+    },
+    saveStats: function() {
+      if (this.speedOfWriting !== 0) {
+        let date = new Date();
+        let key =
+          date.getDate() +
+          ":" +
+          (parseInt(date.getMonth()) + 1) +
+          ":" +
+          date.getFullYear();
+        let stats = JSON.parse(window.localStorage.getItem("stats")) || {};
+        if (stats[key]) {
+          stats[key].speed = Math.round(
+            (stats[key].speed + this.speedOfWriting) / 2
+          );
+          stats[key].totalChar += this.totalCharacters;
+          stats[key].totalWords += this.totalWords;
+          stats[key].totalTime += this.totalTime;
+          stats[key].errorCount += this.errorCount;
+          stats[key].count += 1;
+        } else {
+          stats[key] = {
+            speed: this.speed,
+            totalChar: this.totalCharacters,
+            totalWords: this.totalWords,
+            totalTime: this.totalTime,
+            errorCount: this.errorCount,
+            count: 1
+          };
+        }
+        window.localStorage.setItem("stats", JSON.stringify(stats));
+      }
     }
   }
 };
@@ -92,7 +126,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .container {

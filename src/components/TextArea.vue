@@ -3,9 +3,11 @@
     <div class="left">
       <textarea ref="mainInput" class="written-text" name="main" id="text" @input="$emit('textChanged', $event.target.value); sampleText($event);" v-model="inputText"></textarea>
       <!-- TODO: Replace 'C' with icon -->
-      <button class="clear-btn" @click="clearText()">C</button>
+      <button class="btn clear" @click="clearText()">C</button>
     </div>
-    <div v-if="!layout" class="sample-text" v-html="output"></div>
+    <div v-if="!layout" class="sample-text" v-html="output">
+    </div>
+    <button class="btn update" @click="getSample()">U</button>
   </div>
 </template>
 
@@ -79,30 +81,22 @@ export default {
       }
       //Backspace handling
       if (event.inputType === "deleteContentBackward" && this.pos !== 0) {
-        this.deletaLastSpan();
+        this.deleteLastSpan();
       }
       return this.output;
     },
     getSample: function() {
       let vm = this;
-      //Fetch api response format - array with one element: [text: "sample text",]
-      fetch("http://127.0.0.1:8000/demos/api/sample-text/")
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(data) {
-          vm.sample = data[0].text;
-          vm.output = vm.sample;
-        })
-        .catch(function(error) {
-          //Sample text when api is offline
-          vm.sample =
-            "From the comfort of our modern lives we tend to look back at the turn of the twentieth century as a dangerous time for sea travellers. With limited communication facilities, and shipping technology still in its infancy in the early nineteen hundreds, we consider ocean travel to have been a risky business. But to the people of the time it was one of the safest forms of transport. At the time of the Titanic’s maiden voyage in 1912, there had only been four lives lost in the previous forty years on passenger ships on the North Atlantic crossing. And the Titanic was confidently proclaimed to be unsinkable. She represented the pinnacle of technological advance at the time. Her builders, crew and passengers had no doubt that she was the finest ship ever built. But still she did sink on April 14, 1912, taking 1,517 of her passengers and crew with her.";
-          vm.output = vm.sample;
-          console.log(error);
-        });
+      if (vm.$root.samples.length <= 0) {
+        vm.sample =
+          "From the comfort of our modern lives we tend to look back at the turn of the twentieth century as a dangerous time for sea travellers. With limited communication facilities, and shipping technology still in its infancy in the early nineteen hundreds, we consider ocean travel to have been a risky business. But to the people of the time it was one of the safest forms of transport. At the time of the Titanic's maiden voyage in 1912, there had only been four lives lost in the previous forty years on passenger ships on the North Atlantic crossing. And the Titanic was confidently proclaimed to be unsinkable. She represented the pinnacle of technological advance at the time. Her builders, crew and passengers had no doubt that she was the finest ship ever built. But still she did sink on April 14, 1912, taking 1,517 of her passengers and crew with her.";
+      } else {
+        var rnd = Math.floor(Math.random() * vm.$root.samples.length);
+        vm.sample = vm.$root.samples[rnd][".value"];
+      }
+      vm.output = vm.sample;
     },
-    deletaLastSpan: function() {
+    deleteLastSpan: function() {
       //Straightforward way to delete last span
       let offset = this.output.length;
       let start = this.output.lastIndexOf("<span");
@@ -127,6 +121,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .text-area {
+  position: relative;
   display: flex;
   width: 100%;
   height: 300px;
@@ -145,22 +140,9 @@ export default {
       resize: none;
       box-sizing: border-box;
     }
-    .clear-btn {
-      position: absolute;
-      right: 5px;
-      bottom: 5px;
-      background-color: #2196f3;
-      border: 0;
-      border-radius: 50%;
-      height: 32px;
-      width: 32px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-      &:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-      }
-    }
   }
   .sample-text {
+    position: relative;
     text-align: left;
     border: 1px solid #b0b0b0;
     flex: 1;
@@ -173,5 +155,27 @@ export default {
 .right {
   background-color: lightgreen;
   color: green;
+}
+
+.btn {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  background-color: #2196f3;
+  border: 0;
+  border-radius: 50%;
+  height: 32px;
+  width: 32px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  }
+  &:focus {
+    outline: 0;
+  }
+}
+
+.update {
+  right: 25px;
 }
 </style>

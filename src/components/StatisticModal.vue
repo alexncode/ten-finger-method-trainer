@@ -45,14 +45,9 @@ export default {
   },
   created: function() {
     this.stats = JSON.parse(window.localStorage.getItem("stats"));
-    console.log(
-      Object.entries(this.stats)[0][0],
-      Object.entries(this.stats)[0][1]
-    );
   },
   mounted: function() {
     var ctx = this.$refs.chart;
-    console.log(this.statsEnries);
     var myChart = new Chart(ctx, {
       type: "line",
       data: {
