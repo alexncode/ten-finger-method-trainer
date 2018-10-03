@@ -1,5 +1,6 @@
 # 10fingerType
 Launch app and just start writing after 5 seconds after you stop results wold show up.
+[Live Demo](https://brave-hodgkin-4c2ac0.netlify.com/)
 
 ## Project setup
 ```
