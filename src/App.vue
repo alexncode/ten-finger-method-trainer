@@ -79,34 +79,46 @@ export default {
       }
     },
     saveStats: function() {
-      if (this.speedOfWriting !== 0) {
+      if (
+        this.speedOfWriting !== 0 &&
+        (this.totalTime >= 180 || this.totalCharacters >= 500)
+      ) {
         let date = new Date();
-        let key =
+        let today =
           date.getDate() +
           ":" +
           (parseInt(date.getMonth()) + 1) +
           ":" +
           date.getFullYear();
-        let stats = JSON.parse(window.localStorage.getItem("stats")) || {};
-        if (stats[key]) {
-          stats[key].speed = Math.round(
-            (stats[key].speed + this.speedOfWriting) / 2
-          );
-          stats[key].totalChar += this.totalCharacters;
-          stats[key].totalWords += this.totalWords;
-          stats[key].totalTime += this.totalTime;
-          stats[key].errorCount += this.errorCount;
-          stats[key].count += 1;
-        } else {
-          stats[key] = {
-            speed: this.speed,
-            totalChar: this.totalCharacters,
-            totalWords: this.totalWords,
-            totalTime: this.totalTime,
-            errorCount: this.errorCount,
-            count: 1
-          };
-        }
+        let stats = JSON.parse(window.localStorage.getItem("stats")) || [];
+        stats.push({
+          speed: this.speedOfWriting,
+          totalChar: this.totalCharacters,
+          totalWords: this.totalWords,
+          totalTime: this.totalTime,
+          errorCount: this.errorCount,
+          errorPerChar: (this.errorCount / this.totalCharacters) * 100, //Percentage
+          data: today
+        });
+        // if (stats[key]) {
+        //   stats[key].speed = Math.round(
+        //     (stats[key].speed + this.speedOfWriting) / 2
+        //   );
+        //   stats[key].totalChar += this.totalCharacters;
+        //   stats[key].totalWords += this.totalWords;
+        //   stats[key].totalTime += this.totalTime;
+        //   stats[key].errorCount += this.errorCount;
+        //   stats[key].count += 1;
+        // } else {
+        //   stats[key] = {
+        //     speed: this.speedOfWriting,
+        //     totalChar: this.totalCharacters,
+        //     totalWords: this.totalWords,
+        //     totalTime: this.totalTime,
+        //     errorCount: this.errorCount,
+        //     count: 1
+        //   };
+        // }
         window.localStorage.setItem("stats", JSON.stringify(stats));
       }
     }

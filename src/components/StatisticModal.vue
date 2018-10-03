@@ -6,20 +6,8 @@
           <div class="modal-header">
             Statistic
           </div>
-          <div class="modal-body">
-            <div>Date</div>
-            <div>Speed</div>
-            <div>Characters</div>
-            <div>Words</div>
-            <div>Time</div>
-            <template v-for="(stat, id, key) in statsEnries">
-              <div :key="key">{{stat[0]}}</div>
-              <div :key="'s'+id">{{ stat[1].speed }}</div>
-              <div :key="'c'+id">{{ stat[1].totalChar }}</div>
-              <div :key="'w'+id">{{ stat[1].totalWords }}</div>
-              <div :key="'t'+id">{{ stat[1].totalTime }}</div>
-            </template>
-          </div>
+          <button @click.stop="byDay = !byDay">By Day</button>
+          <button @click="copyStats">Copy stats</button>
           <canvas ref="chart" id="myChart" width="400" height="400"></canvas>
         </div>
       </div>
@@ -30,12 +18,152 @@
 <script>
 var Chart = require("chart.js");
 
+let stats = [
+  {
+    speed: 223,
+    totalChar: 856,
+    totalWords: 154,
+    totalTime: 231,
+    errorCount: 102,
+    errorPerChar: 9.619686800894854,
+    data: "30:9:2018"
+  },
+  {
+    speed: 227,
+    totalChar: 856,
+    totalWords: 154,
+    totalTime: 226,
+    errorCount: 84,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 236,
+    totalChar: 856,
+    totalWords: 151,
+    totalTime: 217,
+    errorCount: 106,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 254,
+    totalChar: 856,
+    totalWords: 152,
+    totalTime: 202,
+    errorCount: 97,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 210,
+    totalChar: 856,
+    totalWords: 155,
+    totalTime: 245,
+    errorCount: 43,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 217,
+    totalChar: 856,
+    totalWords: 152,
+    totalTime: 236,
+    errorCount: 110,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 220,
+    totalChar: 856,
+    totalWords: 150,
+    totalTime: 233,
+    errorCount: 57,
+    errorPerChar: 9.619686800894854,
+    data: "1:10:2018"
+  },
+  {
+    speed: 249,
+    totalChar: 856,
+    totalWords: 152,
+    totalTime: 206,
+    errorCount: 75,
+    errorPerChar: 9.619686800894854,
+    data: "2:10:2018"
+  },
+  {
+    speed: 149,
+    totalChar: 856,
+    totalWords: 155,
+    totalTime: 345,
+    errorCount: 100,
+    errorPerChar: 9.619686800894854,
+    data: "2:10:2018"
+  },
+  {
+    speed: 226,
+    totalChar: 856,
+    totalWords: 154,
+    totalTime: 227,
+    errorCount: 63,
+    errorPerChar: 9.619686800894854,
+    data: "2:10:2018"
+  },
+  {
+    speed: 241,
+    totalChar: 856,
+    totalWords: 150,
+    totalTime: 213,
+    errorCount: 106,
+    errorPerChar: 9.619686800894854,
+    data: "2:10:2018"
+  },
+  {
+    speed: 240,
+    totalChar: 856,
+    totalWords: 150,
+    totalTime: 214,
+    errorCount: 116,
+    errorPerChar: 9.619686800894854,
+    data: "3:10:2018"
+  },
+  {
+    speed: 213,
+    totalChar: 856,
+    totalWords: 156,
+    totalTime: 242,
+    errorCount: 61,
+    errorPerChar: 9.619686800894854,
+    data: "3:10:2018"
+  },
+  {
+    speed: 250,
+    totalChar: 856,
+    totalWords: 150,
+    totalTime: 205,
+    errorCount: 61,
+    errorPerChar: 1403.27868852459,
+    data: "3:10:2018"
+  },
+  {
+    speed: 147,
+    totalChar: 447,
+    totalWords: 75,
+    totalTime: 183,
+    errorCount: 43,
+    errorPerChar: 9.619686800894854,
+    data: "3:10:2018"
+  }
+];
+
 export default {
   name: "StatisticModal",
   props: {},
   data() {
     return {
-      stats: {}
+      stats: {},
+      byDay: false,
+      ctx: ""
     };
   },
   computed: {
@@ -45,42 +173,83 @@ export default {
   },
   created: function() {
     this.stats = JSON.parse(window.localStorage.getItem("stats"));
+
+    // this.stats = stats;
   },
   mounted: function() {
-    var ctx = this.$refs.chart;
-    var myChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: this.statsEnries.map(val => val[0]),
-        datasets: [
-          {
-            label: "Speed",
-            data: this.statsEnries.map(val => val[1].speed),
-            borderColor: ["rgba(255,99,132,1)"],
-            borderWidth: 1,
-            fill: false
-          },
-          {
-            label: "Errors",
-            data: this.statsEnries.map(val => val[1].errorCount),
-            borderColor: ["rgba(100,99,255,1)"],
-            borderWidth: 1,
-            fill: false
+    this.ctx = this.$refs.chart;
+    this.drawStats(...this.getAllStats());
+  },
+  watch: {
+    byDay: function() {
+      if (this.byDay) this.drawStats(...this.getDayStats());
+      else this.drawStats(...this.getAllStats());
+    }
+  },
+  methods: {
+    copyStats: function() {
+      console.log(window.localStorage.getItem("stats"));
+    },
+    getAllStats: function() {
+      let labels = this.statsEnries.map(val => val[0]);
+      let speeds = this.statsEnries.map(val => val[1].speed);
+      let errors = this.statsEnries.map(val => val[1].errorCount);
+      return [labels, speeds, errors];
+    },
+    getDayStats: function() {
+      let avg = 0;
+      const unique = [...new Set(this.stats.map(item => item.data))];
+      //TODO: BAD code redo it!
+      let averageSpeeds = [];
+      let col = 0;
+      for (let k = 0; k < unique.length; k++) {
+        for (let i = 0; i < this.stats.length; i++) {
+          if (this.stats[i].data === unique[k]) {
+            avg += this.stats[i].speed;
+            col += 1;
           }
-        ]
-      },
-      options: {
-        scales: {
-          yAxes: [
+        }
+        averageSpeeds.push(avg / col);
+        col = 0;
+        avg = 0;
+      }
+      return [unique, averageSpeeds, []];
+    },
+    drawStats(labels, speeds, errors) {
+      let myChart = new Chart(this.ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
             {
-              ticks: {
-                beginAtZero: true
-              }
+              label: "Speed",
+              data: speeds,
+              borderColor: ["rgba(255,99,132,1)"],
+              borderWidth: 1,
+              fill: false
+            },
+            {
+              label: "Errors",
+              data: errors,
+              borderColor: ["rgba(100,99,255,1)"],
+              borderWidth: 1,
+              fill: false
             }
           ]
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true
+                }
+              }
+            ]
+          }
         }
-      }
-    });
+      });
+    }
   }
 };
 </script>
