@@ -173,9 +173,9 @@ export default {
     }
   },
   created: function() {
-    // this.stats = JSON.parse(window.localStorage.getItem("stats"));
+    this.stats = JSON.parse(window.localStorage.getItem("stats"));
 
-    this.stats = stats;
+    // this.stats = stats;
   },
   mounted: function() {
     this.ctx = this.$refs.chart;

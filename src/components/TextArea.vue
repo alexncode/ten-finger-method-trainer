@@ -61,9 +61,9 @@ export default {
       let spans = this.$refs.highlightedText.children;
       if (this.pos !== 0 && event.data !== null) {
         if (this.inputText[this.pos - 1] === spans[this.pos - 1].innerText) {
-          spans[this.pos - 1].style = "background-color: #1ad71a;";
+          spans[this.pos - 1].style = "background-color: var(--right);";
         } else {
-          spans[this.pos - 1].style = "background-color: #ff8989;";
+          spans[this.pos - 1].style = "background-color: var(--wrong);";
         }
       }
     },
@@ -98,6 +98,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .text-area {
+  --right: #82eb82;
+  --wrong: #ffb4b4;
   position: relative;
   display: flex;
   width: 100%;
@@ -138,7 +140,7 @@ export default {
   position: absolute;
   right: 5px;
   bottom: 5px;
-  background-color: #2196f3;
+  background-color: #f7931e;
   border: 0;
   border-radius: 50%;
   height: 32px;

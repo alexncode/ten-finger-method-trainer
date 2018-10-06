@@ -128,7 +128,7 @@ export default {
 
 <style lang="scss">
 body {
-  background-color: #d1d1d1;
+  background-color: #414141;
   margin: 0;
 }
 
@@ -144,5 +144,8 @@ body {
 .container {
   max-width: 900px;
   margin: auto;
+  padding: 15px 20px;
+  background-color: rgb(223, 223, 223);
+  border-radius: 15px;
 }
 </style>
