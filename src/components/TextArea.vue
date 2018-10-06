@@ -66,40 +66,6 @@ export default {
           spans[this.pos - 1].style = "background-color: #ff8989;";
         }
       }
-      //Implement firsts optimize later
-      //Highlight errors
-      // if (this.pos !== 0 && event.data !== null) {
-      //   if (this.inputText[this.pos - 1] !== this.sample[this.pos - 1]) {
-      //     this.output = this.output.insert(
-      //       this.pos + this.errorOffset - 1,
-      //       this.red
-      //     );
-      //     this.errorOffset += this.red.length;
-      //     this.output = this.output.insert(
-      //       this.pos + this.errorOffset,
-      //       "</span>"
-      //     );
-      //     this.errorOffset += 7;
-      //     this.errorsCount += 1;
-      //     this.$emit("errorCount", this.errorsCount);
-      //   } else {
-      //     this.output = this.output.insert(
-      //       this.pos + this.errorOffset - 1,
-      //       this.green
-      //     );
-      //     this.errorOffset += this.green.length;
-      //     this.output = this.output.insert(
-      //       this.pos + this.errorOffset,
-      //       "</span>"
-      //     );
-      //     this.errorOffset += 7;
-      //   }
-      // }
-      // //Backspace handling
-      // if (event.inputType === "deleteContentBackward" && this.pos !== 0) {
-      //   this.deleteLastSpan();
-      // }
-      // return this.output;
     },
     getSample: function() {
       let vm = this;
@@ -117,17 +83,6 @@ export default {
         .split("")
         .map(n => `<span>${n}</span>`)
         .join("");
-    },
-    deleteLastSpan: function() {
-      //Straightforward way to delete last span
-      let offset = this.output.length;
-      let start = this.output.lastIndexOf("<span");
-      let finish = this.output.lastIndexOf(';">') + 3;
-      this.output = this.output.slice(0, start) + this.output.slice(finish);
-      start = this.output.lastIndexOf("</span>");
-      this.output = this.output.slice(0, start) + this.output.slice(start + 7);
-      offset = offset - this.output.length;
-      this.errorOffset = this.errorOffset - offset;
     },
     clearText: function() {
       this.inputText = "";

@@ -163,7 +163,8 @@ export default {
     return {
       stats: {},
       byDay: false,
-      ctx: ""
+      ctx: "",
+      myChart: {}
     };
   },
   computed: {
@@ -172,9 +173,9 @@ export default {
     }
   },
   created: function() {
-    this.stats = JSON.parse(window.localStorage.getItem("stats"));
+    // this.stats = JSON.parse(window.localStorage.getItem("stats"));
 
-    // this.stats = stats;
+    this.stats = stats;
   },
   mounted: function() {
     this.ctx = this.$refs.chart;
@@ -197,58 +198,71 @@ export default {
       return [labels, speeds, errors];
     },
     getDayStats: function() {
-      let avg = 0;
-      const unique = [...new Set(this.stats.map(item => item.data))];
-      //TODO: BAD code redo it!
-      let averageSpeeds = [];
-      let col = 0;
-      for (let k = 0; k < unique.length; k++) {
-        for (let i = 0; i < this.stats.length; i++) {
-          if (this.stats[i].data === unique[k]) {
-            avg += this.stats[i].speed;
-            col += 1;
-          }
+      let res = {};
+      for (let i = 0; i < this.stats.length; i++) {
+        if (res[this.stats[i].data]) {
+          res[this.stats[i].data].speed += this.stats[i].speed;
+          res[this.stats[i].data].errors += this.stats[i].errorCount;
+          res[this.stats[i].data].count += 1;
+        } else {
+          res[this.stats[i].data] = {
+            speed: this.stats[i].speed,
+            errors: this.stats[i].errorCount,
+            count: 1
+          };
         }
-        averageSpeeds.push(avg / col);
-        col = 0;
-        avg = 0;
       }
-      return [unique, averageSpeeds, []];
+      return [
+        Object.keys(res),
+        Object.keys(res).map(key =>
+          Math.round(res[key].speed / res[key].count)
+        ),
+        Object.keys(res).map(key =>
+          Math.round(res[key].errors / res[key].count)
+        )
+      ];
     },
     drawStats(labels, speeds, errors) {
-      let myChart = new Chart(this.ctx, {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: "Speed",
-              data: speeds,
-              borderColor: ["rgba(255,99,132,1)"],
-              borderWidth: 1,
-              fill: false
-            },
-            {
-              label: "Errors",
-              data: errors,
-              borderColor: ["rgba(100,99,255,1)"],
-              borderWidth: 1,
-              fill: false
-            }
-          ]
-        },
-        options: {
-          scales: {
-            yAxes: [
+      if (this.myChart instanceof Chart) {
+        this.myChart.data.labels = labels;
+        this.myChart.data.datasets[0].data = speeds;
+        this.myChart.data.datasets[1].data = errors;
+        this.myChart.update();
+      } else {
+        this.myChart = new Chart(this.ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
               {
-                ticks: {
-                  beginAtZero: true
-                }
+                label: "Speed",
+                data: speeds,
+                borderColor: ["rgba(255,99,132,1)"],
+                borderWidth: 1,
+                fill: false
+              },
+              {
+                label: "Errors",
+                data: errors,
+                borderColor: ["rgba(100,99,255,1)"],
+                borderWidth: 1,
+                fill: false
               }
             ]
+          },
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true
+                  }
+                }
+              ]
+            }
           }
-        }
-      });
+        });
+      }
     }
   }
 };
