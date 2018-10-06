@@ -10,7 +10,7 @@
           <path fill="none" d="M0 0h24v24H0z" /></svg>
       </button>
     </div>
-    <div v-if="!layout" class="sample-text" v-html="output">
+    <div ref="highlightedText" v-if="!layout" class="sample-text" v-html="output">
     </div>
     <button class="btn update" @click="getSample()">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -58,40 +58,48 @@ export default {
       if (this.inputText === "") {
         this.clearText();
       }
-      //Implement firsts optimize later
-      //Highlight errors
+      let spans = this.$refs.highlightedText.children;
       if (this.pos !== 0 && event.data !== null) {
-        if (this.inputText[this.pos - 1] !== this.sample[this.pos - 1]) {
-          this.output = this.output.insert(
-            this.pos + this.errorOffset - 1,
-            this.red
-          );
-          this.errorOffset += this.red.length;
-          this.output = this.output.insert(
-            this.pos + this.errorOffset,
-            "</span>"
-          );
-          this.errorOffset += 7;
-          this.errorsCount += 1;
-          this.$emit("errorCount", this.errorsCount);
+        if (this.inputText[this.pos - 1] === spans[this.pos - 1].innerText) {
+          spans[this.pos - 1].style = "background-color: #1ad71a;";
         } else {
-          this.output = this.output.insert(
-            this.pos + this.errorOffset - 1,
-            this.green
-          );
-          this.errorOffset += this.green.length;
-          this.output = this.output.insert(
-            this.pos + this.errorOffset,
-            "</span>"
-          );
-          this.errorOffset += 7;
+          spans[this.pos - 1].style = "background-color: #ff8989;";
         }
       }
-      //Backspace handling
-      if (event.inputType === "deleteContentBackward" && this.pos !== 0) {
-        this.deleteLastSpan();
-      }
-      return this.output;
+      //Implement firsts optimize later
+      //Highlight errors
+      // if (this.pos !== 0 && event.data !== null) {
+      //   if (this.inputText[this.pos - 1] !== this.sample[this.pos - 1]) {
+      //     this.output = this.output.insert(
+      //       this.pos + this.errorOffset - 1,
+      //       this.red
+      //     );
+      //     this.errorOffset += this.red.length;
+      //     this.output = this.output.insert(
+      //       this.pos + this.errorOffset,
+      //       "</span>"
+      //     );
+      //     this.errorOffset += 7;
+      //     this.errorsCount += 1;
+      //     this.$emit("errorCount", this.errorsCount);
+      //   } else {
+      //     this.output = this.output.insert(
+      //       this.pos + this.errorOffset - 1,
+      //       this.green
+      //     );
+      //     this.errorOffset += this.green.length;
+      //     this.output = this.output.insert(
+      //       this.pos + this.errorOffset,
+      //       "</span>"
+      //     );
+      //     this.errorOffset += 7;
+      //   }
+      // }
+      // //Backspace handling
+      // if (event.inputType === "deleteContentBackward" && this.pos !== 0) {
+      //   this.deleteLastSpan();
+      // }
+      // return this.output;
     },
     getSample: function() {
       let vm = this;
@@ -102,7 +110,13 @@ export default {
         var rnd = Math.floor(Math.random() * vm.$root.samples.length);
         vm.sample = vm.$root.samples[rnd][".value"];
       }
-      vm.output = vm.sample;
+      vm.output = vm.generateOutput(vm.sample);
+    },
+    generateOutput: function(sampleText) {
+      return sampleText
+        .split("")
+        .map(n => `<span>${n}</span>`)
+        .join("");
     },
     deleteLastSpan: function() {
       //Straightforward way to delete last span
