@@ -1,10 +1,10 @@
 <template>
   <div class="statistic">
     <span>Speed of writing: <span v-html="speedColorized"></span> c/m </span>
-    <span>Chars: {{totalChar}} </span>
-    <span>Words: {{totalWords}} </span>
+    <span>Chars: {{ stats.totalChar }} </span>
+    <span>Words: {{ stats.totalWords }} </span>
     <span>Time: {{ totalTimeHuman }} </span>
-    <span>Errors: {{ errorCount }}</span>
+    <span>Errors: {{ stats.errorCount }}</span>
   </div>
 </template>
 
@@ -12,11 +12,13 @@
 export default {
   name: "Statistic",
   props: {
-    speed: Number,
-    totalChar: Number,
-    totalWords: Number,
-    totalTime: Number,
-    errorCount: Number
+    stats: {
+      speed: Number,
+      totalChar: Number,
+      totalWords: Number,
+      totalTime: Number,
+      errorCount: Number
+    }
   },
   data() {
     return {
@@ -25,20 +27,21 @@ export default {
   },
   computed: {
     totalTimeHuman: function() {
-      return new Date(1000 * this.totalTime).toISOString().substr(14, 5);
+      return new Date(1000 * this.stats.totalTime).toISOString().substr(14, 5);
     },
     speedColorized: function() {
       let result = "";
-      if (this.speed > 300) {
-        result = `<span style="color: orange;">${this.speed}</span>`;
-      } else if (this.speed > 200) {
-        result = `<span style="color: blue;">${this.speed}</span>`;
-      } else if (this.speed > 100) {
-        result = `<span style="color: green;">${this.speed}</span>`;
-      } else if (this.speed > 50) {
-        result = `<span style="color: red;">${this.speed}</span>`;
+      const speed = this.stats.speed;
+      if (speed > 300) {
+        result = `<span style="color: orange;">${speed}</span>`;
+      } else if (speed > 200) {
+        result = `<span style="color: blue;">${speed}</span>`;
+      } else if (speed > 100) {
+        result = `<span style="color: green;">${speed}</span>`;
+      } else if (speed > 50) {
+        result = `<span style="color: red;">${speed}</span>`;
       } else {
-        result = this.speed;
+        result = speed;
       }
       return result;
     }

@@ -1,8 +1,7 @@
 <template>
   <div class="text-area">
     <div class="left">
-      <textarea ref="mainInput" class="written-text" name="main" id="text" @input="$emit('textChanged', $event.target.value); sampleText($event);" v-model="inputText"></textarea>
-      <!-- TODO: Replace 'C' with icon -->
+      <textarea ref="mainInput" class="written-text" name="main" id="text" @input="processInput" v-model="inputText"></textarea>
       <button class="btn clear" @click="clearText()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
           <path fill="none" d="M0 0h24v24H0V0z" />
@@ -21,6 +20,13 @@
 </template>
 
 <script>
+const WRONG = "background-color: var(--wrong);";
+const RIGHT = "background-color: var(--right);";
+const DEFAULT_TEXT =
+  "From the comfort of our modern lives we tend to look back at the turn of the twentieth century as a dangerous time for sea travellers. With limited communication facilities, and shipping technology still in its infancy in the early nineteen hundreds, we consider ocean travel to have been a risky business. But to the people of the time it was one of the safest forms of transport. At the time of the Titanic's maiden voyage in 1912, there had only been four lives lost in the previous forty years on passenger ships on the North Atlantic crossing. And the Titanic was confidently proclaimed to be unsinkable. She represented the pinnacle of technological advance at the time. Her builders, crew and passengers had no doubt that she was the finest ship ever built. But still she did sink on April 14, 1912, taking 1,517 of her passengers and crew with her.";
+
+let delay = null;
+
 export default {
   name: "TextArea",
   props: {
@@ -29,49 +35,53 @@ export default {
   data() {
     return {
       inputText: "",
-      output: ""
-    };
-  },
-  created: function() {
-    this.green = '<span style="background-color: lightgreen;">';
-    this.red = '<span style="background-color: #ffa0a0;">';
-    this.errorOffset = 0;
-    this.output = "";
-    this.sample = "";
-    this.errorsCount = 0;
-    this.getSample();
-    String.prototype.insert = function(idx, str) {
-      return this.slice(0, idx) + str + this.slice(idx);
+      output: "",
+      sample: "",
+      errorsCount: 0,
+      active: false,
+      startTime: 0,
+      endTime: 0
     };
   },
   computed: {
     pos: function() {
       return this.inputText.length;
+    },
+    totalWords: function() {
+      //Counting the amount of words
+      return this.inputText.split(" ").length;
     }
   },
   mounted: function() {
     this.$refs.mainInput.focus();
+    this.getSample();
   },
   methods: {
-    sampleText: function(event) {
+    processInput: function(event) {
       //Reset all when input empty
       if (this.inputText === "") {
         this.clearText();
       }
+      if (!this.active) {
+        this.active = true;
+        this.startTime = Date.now();
+      }
       let spans = this.$refs.highlightedText.children;
       if (this.pos !== 0 && event.data !== null) {
         if (this.inputText[this.pos - 1] === spans[this.pos - 1].innerText) {
-          spans[this.pos - 1].style = "background-color: var(--right);";
+          spans[this.pos - 1].style = RIGHT;
         } else {
-          spans[this.pos - 1].style = "background-color: var(--wrong);";
+          spans[this.pos - 1].style = WRONG;
+          this.errorsCount += 1;
         }
+        this.calcStats();
+        this.updateTiemout();
       }
     },
     getSample: function() {
       let vm = this;
       if (vm.$root.samples.length <= 0) {
-        vm.sample =
-          "From the comfort of our modern lives we tend to look back at the turn of the twentieth century as a dangerous time for sea travellers. With limited communication facilities, and shipping technology still in its infancy in the early nineteen hundreds, we consider ocean travel to have been a risky business. But to the people of the time it was one of the safest forms of transport. At the time of the Titanic's maiden voyage in 1912, there had only been four lives lost in the previous forty years on passenger ships on the North Atlantic crossing. And the Titanic was confidently proclaimed to be unsinkable. She represented the pinnacle of technological advance at the time. Her builders, crew and passengers had no doubt that she was the finest ship ever built. But still she did sink on April 14, 1912, taking 1,517 of her passengers and crew with her.";
+        vm.sample = DEFAULT_TEXT;
       } else {
         var rnd = Math.floor(Math.random() * vm.$root.samples.length);
         vm.sample = vm.$root.samples[rnd][".value"];
@@ -84,12 +94,62 @@ export default {
         .map(n => `<span>${n}</span>`)
         .join("");
     },
+    clearHighlightedText: function() {
+      Array.from(this.$refs.highlightedText.children).forEach(element => {
+        element.style = "background-color: transparent;";
+      });
+    },
     clearText: function() {
       this.inputText = "";
-      this.output = this.sample;
-      this.errorOffset = 0;
+      this.active = false;
+      this.clearHighlightedText();
       this.errorsCount = 0;
-      this.$emit("textChanged", this.inputText);
+    },
+    calcStats: function() {
+      const endTime = Date.now();
+      const speed = Math.round(
+        (this.pos / ((endTime - this.startTime) / 1000)) * 60
+      );
+      this.stats = {
+        speed: speed,
+        errorCount: this.errorsCount,
+        totalChar: this.pos,
+        totalWords: this.totalWords,
+        totalTime: Math.round((endTime - this.startTime) / 1000)
+      };
+      this.$emit("statistic", this.stats);
+    },
+    updateTiemout: function() {
+      clearTimeout(delay);
+      let vm = this;
+      delay = setTimeout(function() {
+        vm.active = false;
+        vm.saveStats();
+      }, 5000);
+    },
+    saveStats: function() {
+      if (
+        this.stats.speed !== 0 &&
+        (this.stats.totalTime >= 180 || this.stats.totalChar >= 50)
+      ) {
+        let stats = JSON.parse(window.localStorage.getItem("stats")) || [];
+        stats.push({
+          ...this.stats,
+          errorPerChar: (this.stats.errorCount / this.stats.totalChar) * 100, // Percentage
+          data: this.getToday()
+        });
+        window.localStorage.setItem("stats", JSON.stringify(stats));
+      }
+    },
+    getToday() {
+      let date = new Date();
+      return (
+        date.getDate() +
+        ":" +
+        (parseInt(date.getMonth()) + 1) +
+        ":" +
+        date.getFullYear()
+      );
     }
   }
 };
