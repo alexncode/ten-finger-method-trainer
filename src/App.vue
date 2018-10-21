@@ -56,9 +56,9 @@ body {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  // text-align: center;
   color: #2c3e50;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
 }
 
 .container {
@@ -67,5 +67,8 @@ body {
   padding: 15px 20px;
   background-color: rgb(223, 223, 223);
   border-radius: 15px;
+  display: flex;
+  height: 95vh;
+  flex-flow: column;
 }
 </style>

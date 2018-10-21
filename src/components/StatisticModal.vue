@@ -6,9 +6,8 @@
           <div class="modal-header">
             Statistic
           </div>
-          <button @click.stop="byDay = !byDay">By Day</button>
-          <button @click="copyStats">Copy stats</button>
-          <canvas ref="chart" id="myChart" width="400" height="400"></canvas>
+          <button class="btn" @click.stop="byDay = !byDay">By Day</button>
+          <canvas ref="chart" id="myChart"></canvas>
         </div>
       </div>
     </div>
@@ -17,144 +16,6 @@
 
 <script>
 var Chart = require("chart.js");
-
-let stats = [
-  {
-    speed: 223,
-    totalChar: 856,
-    totalWords: 154,
-    totalTime: 231,
-    errorCount: 102,
-    errorPerChar: 9.619686800894854,
-    data: "30:9:2018"
-  },
-  {
-    speed: 227,
-    totalChar: 856,
-    totalWords: 154,
-    totalTime: 226,
-    errorCount: 84,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 236,
-    totalChar: 856,
-    totalWords: 151,
-    totalTime: 217,
-    errorCount: 106,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 254,
-    totalChar: 856,
-    totalWords: 152,
-    totalTime: 202,
-    errorCount: 97,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 210,
-    totalChar: 856,
-    totalWords: 155,
-    totalTime: 245,
-    errorCount: 43,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 217,
-    totalChar: 856,
-    totalWords: 152,
-    totalTime: 236,
-    errorCount: 110,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 220,
-    totalChar: 856,
-    totalWords: 150,
-    totalTime: 233,
-    errorCount: 57,
-    errorPerChar: 9.619686800894854,
-    data: "1:10:2018"
-  },
-  {
-    speed: 249,
-    totalChar: 856,
-    totalWords: 152,
-    totalTime: 206,
-    errorCount: 75,
-    errorPerChar: 9.619686800894854,
-    data: "2:10:2018"
-  },
-  {
-    speed: 149,
-    totalChar: 856,
-    totalWords: 155,
-    totalTime: 345,
-    errorCount: 100,
-    errorPerChar: 9.619686800894854,
-    data: "2:10:2018"
-  },
-  {
-    speed: 226,
-    totalChar: 856,
-    totalWords: 154,
-    totalTime: 227,
-    errorCount: 63,
-    errorPerChar: 9.619686800894854,
-    data: "2:10:2018"
-  },
-  {
-    speed: 241,
-    totalChar: 856,
-    totalWords: 150,
-    totalTime: 213,
-    errorCount: 106,
-    errorPerChar: 9.619686800894854,
-    data: "2:10:2018"
-  },
-  {
-    speed: 240,
-    totalChar: 856,
-    totalWords: 150,
-    totalTime: 214,
-    errorCount: 116,
-    errorPerChar: 9.619686800894854,
-    data: "3:10:2018"
-  },
-  {
-    speed: 213,
-    totalChar: 856,
-    totalWords: 156,
-    totalTime: 242,
-    errorCount: 61,
-    errorPerChar: 9.619686800894854,
-    data: "3:10:2018"
-  },
-  {
-    speed: 250,
-    totalChar: 856,
-    totalWords: 150,
-    totalTime: 205,
-    errorCount: 61,
-    errorPerChar: 1403.27868852459,
-    data: "3:10:2018"
-  },
-  {
-    speed: 147,
-    totalChar: 447,
-    totalWords: 75,
-    totalTime: 183,
-    errorCount: 43,
-    errorPerChar: 9.619686800894854,
-    data: "3:10:2018"
-  }
-];
 
 export default {
   name: "StatisticModal",
@@ -188,9 +49,6 @@ export default {
     }
   },
   methods: {
-    copyStats: function() {
-      console.log(window.localStorage.getItem("stats"));
-    },
     getAllStats: function() {
       let labels = this.statsEnries.map(val => val[0]);
       let speeds = this.statsEnries.map(val => val[1].speed);
@@ -270,6 +128,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.btn {
+  position: absolute;
+  right: 25px;
+  top: 20px;
+}
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -288,18 +152,25 @@ export default {
 }
 
 .modal-container {
-  width: 400px;
+  position: relative;
+  max-width: 700px;
+  max-height: 70vh;
   margin: 0px auto;
-  padding: 20px 30px;
+  padding: 20px 15px;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;
+  canvas {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .modal-header {
   margin-top: 0;
-  color: #42b983;
+  // color: #42b983;
+  font-size: 1.5rem;
 }
 
 .modal-body {

@@ -163,7 +163,8 @@ export default {
   position: relative;
   display: flex;
   width: 100%;
-  height: 300px;
+  // height: 100%;
+  flex-grow: 1;
   background-color: #fff;
   .left {
     flex: 1;
@@ -190,10 +191,6 @@ export default {
     overflow: scroll;
     overflow-x: hidden;
   }
-}
-.right {
-  background-color: lightgreen;
-  color: green;
 }
 
 .btn {

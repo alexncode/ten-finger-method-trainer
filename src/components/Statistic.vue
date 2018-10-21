@@ -54,5 +54,6 @@ export default {
 .statistic {
   font-weight: bold;
   line-height: 2rem;
+  text-align: center;
 }
 </style>
